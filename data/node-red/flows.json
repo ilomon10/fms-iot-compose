@@ -4,6 +4,7 @@
         "type": "tab",
         "label": "Flow 1",
         "disabled": false,
+        "locked": true,
         "info": "",
         "env": []
     },
@@ -1215,9 +1216,12 @@
         "z": "faad42cc6fc6b0b1",
         "g": "4e13df872075159d",
         "name": "",
-        "scope": null,
+        "scope": [
+            "30b5420fb48262d9",
+            "71bb18e179c64cd8"
+        ],
         "uncaught": false,
-        "x": 180,
+        "x": 170,
         "y": 520,
         "wires": [
             [
@@ -1249,7 +1253,7 @@
         "z": "faad42cc6fc6b0b1",
         "g": "4e13df872075159d",
         "name": "Define Target Log File",
-        "func": "msg.targetPath = `/logger/${moment().format(\"YYYY_MM_DD\")}-log.txt`\n\nreturn msg;",
+        "func": "msg.targetPath = `/data/logger/${moment().format(\"YYYY_MM_DD\")}-log.txt`\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
