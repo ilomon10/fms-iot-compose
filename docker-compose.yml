@@ -1,0 +1,89 @@
+# compose.yaml
+services:
+  influxdb2:
+    restart: always
+    user: ${UID}:${GID}
+    image: influxdb:2
+    ports:
+      - 666:8086
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: Samudera2024
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN_FILE: TripleSix0==
+      DOCKER_INFLUXDB_INIT_ORG: docs
+      DOCKER_INFLUXDB_INIT_BUCKET: home
+    volumes:
+      # - ./data/influxdb:/var/lib/influxdb2
+      #- ./config/influxdb:/etc/influxdb2
+      #- influxdb_data:/var/lib/influxdb2
+      - type: volume
+        source: influxdb_data
+        target: /var/lib/influxdb2
+      - type: volume
+        source: influxdb_config
+        target: /etc/influxdb2
+  grafana:
+    restart: always
+    user: ${UID}:${GID}
+    image: grafana/grafana:latest
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./data/grafana/grafana.db:/var/lib/grafana/grafana.db
+      - ./data/grafana-provisioning/:/etc/grafana/provisioning
+      - ./data/grafana/public/img/icons/fms:/usr/share/grafana/public/img/icons/fms
+    depends_on:
+      - influxdb2
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=Samudera2024
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+
+  prometheus:
+    restart: always
+    user: ${UID}:${GID}
+    image: prom/prometheus
+    ports:
+      - 6969:9090
+    # commands:
+    #   - '--web.enable-lifecycle'
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    extra_hosts:
+    - host.docker.internal:host-gateway
+
+  node-red:
+    restart: always
+    user: ${UID}:${GID}
+    image: nodered/node-red:latest
+    ports:
+      - 1880:1880
+      - 1881:1881
+    volumes:
+      #- node-red-data:/data
+      - ./data/node-red:/data
+      - ./config/nodered.settings.js:/data/settings.js
+      - ./config/logoSMA.svg:/data/logoSMA.svg
+    depends_on:
+      - influxdb2
+
+  mosquitto:
+    restart: always
+    user: ${UID}:${GID}
+    image: eclipse-mosquitto
+    ports:
+      - 1883:1883
+      - 9001:9001
+    volumes:
+      - ./config/mosquitto:/mosquitto/config
+      - ./data/mosquitto:/mosquitto/data
+      - ./log:/mosquitto/log
+
+volumes:
+  grafana_data:
+  influxdb_data:
+  influxdb_config:
+  prometheus_data:
