@@ -2,9 +2,8 @@
     {
         "id": "faad42cc6fc6b0b1",
         "type": "tab",
-        "label": "Flow 1",
+        "label": "FMS Tracker",
         "disabled": false,
-        "locked": true,
         "info": "",
         "env": []
     },
@@ -151,7 +150,7 @@
         ],
         "x": 94,
         "y": 479,
-        "w": 572,
+        "w": 592,
         "h": 82
     },
     {
@@ -188,6 +187,26 @@
         "y": 699,
         "w": 1612,
         "h": 522
+    },
+    {
+        "id": "830812cc33abb188",
+        "type": "group",
+        "z": "faad42cc6fc6b0b1",
+        "name": "Catch File device.json Not Found",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "d4afe6dd2e3c6d1f",
+            "c142ecb2e4e6ca0c",
+            "bb176567e1b0e082",
+            "c818a5a728f805a4",
+            "a4af0bbe14d120f7"
+        ],
+        "x": 94,
+        "y": 1339,
+        "w": 832,
+        "h": 122
     },
     {
         "id": "65a05b24105db79a",
@@ -431,7 +450,7 @@
         "type": "debug",
         "z": "faad42cc6fc6b0b1",
         "name": "debug: telemetry data",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -455,7 +474,7 @@
         "database": "database",
         "precisionV18FluxV20": "ms",
         "retentionPolicyV18Flux": "",
-        "org": "d86acb81503d3b7b",
+        "org": "3d051a07947bbf39",
         "bucket": "fms-tracker",
         "x": 890,
         "y": 160,
@@ -466,7 +485,7 @@
         "type": "function",
         "z": "faad42cc6fc6b0b1",
         "name": "parser",
-        "func": "\n\nconst data = [\n    {\n        ..._.pick(msg.payload, [\n            \"lon\", \"lat\",\n            \"alt\", \"temp\", \"ip\"\n        ]),\n        track: _.get(msg.payload, \"track\"),\n        mag_track: _.get(msg.payload, \"magtrack\"),\n        mag_var: _.get(msg.payload, \"magvar\"),\n        speed: _.get(msg.payload, \"speed\") * 3.6,\n        time: moment(_.get(msg.payload, \"time\")).toDate(),\n        // timestamp: _.get(msg.payload, \"time\"),\n        realtime_status: _.get(msg, \"delayed\") ? 1: 0\n    },\n    {\n        device_host: _.get(msg.payload, \"hostname\"),\n        device_ip: _.get(msg.payload, \"ip\"),\n        device_mac: _.get(msg.payload, \"mac\"),\n        equipment_id: _.get(msg.payload, \"equipment_id\"),\n        equipment_name: _.get(msg.payload, \"equipment_id\"),\n        equipment_category: _.get(msg.payload, \"equipment_category\"),\n        realtime_status: _.get(msg, \"delayed\") ? \"delayed\": \"realtime\"\n    }\n];\n\nmsg.raw = msg.payload;\nmsg.payload = data;\n\nreturn msg;",
+        "func": "\n\nconst data = [\n    {\n        ..._.pick(msg.payload, [\n            \"lon\", \"lat\",\n            \"alt\", \"temp\", \"ip\"\n        ]),\n        track: _.get(msg.payload, \"track\"),\n        mag_track: _.get(msg.payload, \"magtrack\"),\n        mag_var: _.get(msg.payload, \"magvar\"),\n        speed: _.get(msg.payload, \"speed\") * 3.6,\n        time: moment(_.get(msg.payload, \"time\")).toDate(),\n        // timestamp: _.get(msg.payload, \"time\"),\n        realtime_status: _.get(msg, \"delayed\") ? 1: 0\n    },\n    {\n        device_host: _.get(msg.payload, \"hostname\"),\n        device_ip: _.get(msg.payload, \"ip\"),\n        device_mac: _.get(msg.payload, \"mac\"),\n        equipment_id: _.get(msg.payload, \"equipment_id\"),\n        equipment_name: _.get(msg.payload, \"equipment_id\"),\n        equipment_category: _.get(msg.payload, \"equipment_category\"),\n        realtime_status: _.get(msg, \"delayed\") ? \"delayed\": \"realtime\"\n    }\n];\n\nmsg.raw = msg.payload;\nmsg.payload = data;\nmsg.topic = data[1].device_host;\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -936,7 +955,7 @@
         "database": "database",
         "precisionV18FluxV20": "ms",
         "retentionPolicyV18Flux": "",
-        "org": "d86acb81503d3b7b",
+        "org": "3d051a07947bbf39",
         "bucket": "fms-tracker",
         "x": 1540,
         "y": 1000,
@@ -1214,6 +1233,7 @@
         "id": "3e00ad732a96e376",
         "type": "catch",
         "z": "faad42cc6fc6b0b1",
+        "d": true,
         "g": "4e13df872075159d",
         "name": "",
         "scope": [
@@ -1241,7 +1261,7 @@
         "createDir": true,
         "overwriteFile": "false",
         "encoding": "utf8",
-        "x": 580,
+        "x": 600,
         "y": 520,
         "wires": [
             []
@@ -1269,7 +1289,8 @@
         "y": 520,
         "wires": [
             [
-                "177de42851cabcea"
+                "177de42851cabcea",
+                "08347a2594bd21b2"
             ]
         ]
     },
@@ -1282,9 +1303,137 @@
         "port": 1881,
         "serviceName": "Node-RED",
         "instrumentName": "http_request_duration",
-        "x": 170,
-        "y": 100,
+        "x": 230,
+        "y": 140,
         "wires": []
+    },
+    {
+        "id": "08347a2594bd21b2",
+        "type": "debug",
+        "z": "faad42cc6fc6b0b1",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 560,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "d4afe6dd2e3c6d1f",
+        "type": "catch",
+        "z": "faad42cc6fc6b0b1",
+        "g": "830812cc33abb188",
+        "name": "catch file not found",
+        "scope": [
+            "4203e1eaaa318f25",
+            "fdaded522b2fba23"
+        ],
+        "uncaught": false,
+        "x": 210,
+        "y": 1380,
+        "wires": [
+            [
+                "c818a5a728f805a4"
+            ]
+        ]
+    },
+    {
+        "id": "c142ecb2e4e6ca0c",
+        "type": "debug",
+        "z": "faad42cc6fc6b0b1",
+        "g": "830812cc33abb188",
+        "name": "debug 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 1380,
+        "wires": []
+    },
+    {
+        "id": "bb176567e1b0e082",
+        "type": "file",
+        "z": "faad42cc6fc6b0b1",
+        "g": "830812cc33abb188",
+        "name": "",
+        "filename": "/data/devices.json",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 630,
+        "y": 1380,
+        "wires": [
+            [
+                "c142ecb2e4e6ca0c"
+            ]
+        ]
+    },
+    {
+        "id": "c818a5a728f805a4",
+        "type": "switch",
+        "z": "faad42cc6fc6b0b1",
+        "g": "830812cc33abb188",
+        "name": "",
+        "property": "error.message",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "ENOENT",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 390,
+        "y": 1380,
+        "wires": [
+            [
+                "a4af0bbe14d120f7"
+            ]
+        ]
+    },
+    {
+        "id": "a4af0bbe14d120f7",
+        "type": "change",
+        "z": "faad42cc6fc6b0b1",
+        "g": "830812cc33abb188",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 420,
+        "y": 1420,
+        "wires": [
+            [
+                "bb176567e1b0e082"
+            ]
+        ]
     },
     {
         "id": "0ffcb4ec05fda33c",

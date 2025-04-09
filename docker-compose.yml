@@ -63,10 +63,13 @@ services:
       - 1880:1880
       - 1881:1881
     volumes:
-      #- node-red-data:/data
-      - ./data/node-red:/data
+      - nodered_data:/data
+      #- ./data/node-red:/data
       - ./config/nodered.settings.js:/data/settings.js
       - ./config/logoSMA.svg:/data/logoSMA.svg
+      #- ./data/node-red/package.json:/data/package.json
+      #- ./data/node-red/flows.json:/data/flows.json:rw
+      #- ./data/node-red/flows_cred.json:/data/flows_cred.json:rw
     depends_on:
       - influxdb2
 
@@ -83,6 +86,7 @@ services:
       - ./log:/mosquitto/log
 
 volumes:
+  nodered_data:
   grafana_data:
   influxdb_data:
   influxdb_config:
